@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+</head>
+<body>
+    <div id="confetti-container"></div>
+
+    <div class="container">
+        <header>
+            <h1>✨ My Tasks</h1>
+        </header>
+
+        <div class="input-section">
+            <input
+                type="text"
+                id="task-input"
+                placeholder="What needs to be done?"
+                autocomplete="off"
+            >
+            <button id="add-btn">Add Task</button>
+        </div>
+
+        <div class="view-toggle">
+            <button class="toggle-btn active" data-view="active">Active</button>
+            <button class="toggle-btn" data-view="completed">Completed</button>
+        </div>
+
+        <div id="active-tasks" class="task-list"></div>
+        <div id="completed-tasks" class="task-list hidden"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed'));
+        }
+    </script>
+</body>
+</html>
