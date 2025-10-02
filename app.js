@@ -231,26 +231,132 @@ function toggleViews() {
 // Celebration effects
 function triggerCelebration() {
     createConfetti();
+    createFireworks();
     shakeScreen();
 }
 
 function createConfetti() {
-    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
-    const confettiCount = 1000;
+    const colors = [
+        '#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd',
+        '#f9bec7', '#a786df', '#8b5cf6', '#7c3aed', '#6d28d9',
+        '#fbbf24', '#f59e0b', '#d97706', '#fb923c', '#f97316',
+        '#34d399', '#10b981', '#059669', '#4ade80', '#22c55e',
+        '#60a5fa', '#3b82f6', '#2563eb', '#1d4ed8', '#06b6d4'
+    ];
+    const shapes = ['confetti-rect', 'confetti-circle', 'confetti-ribbon', 'confetti-star'];
+    const confettiCount = 300;
 
     for (let i = 0; i < confettiCount; i++) {
         setTimeout(() => {
             const confetti = document.createElement('div');
-            confetti.className = 'confetti';
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            confetti.className = `confetti ${shape}`;
             confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animation = `confetti-fall ${2 + Math.random() * 2}s linear forwards`;
-            confetti.style.animationDelay = '0s';
+            confetti.style.top = -20 + 'px';
+
+            // Set color based on shape
+            if (shape === 'confetti-star') {
+                confetti.style.borderBottomColor = color;
+            } else {
+                confetti.style.background = color;
+            }
+
+            // Random drift and rotation
+            const drift = (Math.random() - 0.5) * 400;
+            const rotation = Math.random() * 1080 - 540;
+
+            confetti.style.setProperty('--drift', drift + 'px');
+            confetti.style.setProperty('--rotation', rotation + 'deg');
+
+            const duration = 3 + Math.random() * 2;
+            const delay = Math.random() * 0.5;
+
+            confetti.style.animation = `confetti-fall ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s forwards`;
 
             confettiContainer.appendChild(confetti);
 
-            setTimeout(() => confetti.remove(), 4000);
-        }, i * 10);
+            setTimeout(() => confetti.remove(), (duration + delay) * 1000 + 1000);
+        }, i * 5);
+    }
+}
+
+function createFireworks() {
+    const fireworkCount = 6;
+    const colors = [
+        '#ff0a54', '#fbbf24', '#34d399', '#60a5fa',
+        '#a786df', '#f97316', '#22c55e', '#06b6d4'
+    ];
+
+    for (let f = 0; f < fireworkCount; f++) {
+        setTimeout(() => {
+            const x = 20 + Math.random() * 60;
+            const y = 20 + Math.random() * 40;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            // Create rising trail
+            const trail = document.createElement('div');
+            trail.className = 'firework-trail';
+            trail.style.left = x + '%';
+            trail.style.bottom = '0';
+            trail.style.setProperty('--color', color);
+            trail.style.animation = 'firework-rise 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+            confettiContainer.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 1000);
+
+            // Create explosion
+            setTimeout(() => {
+                // Flash effect
+                const flash = document.createElement('div');
+                flash.className = 'firework-flash';
+                flash.style.left = x + '%';
+                flash.style.top = y + '%';
+                flash.style.setProperty('--color', color);
+                flash.style.animation = 'flash 0.6s ease-out forwards';
+                confettiContainer.appendChild(flash);
+                setTimeout(() => flash.remove(), 600);
+
+                // Main burst - 2 rings
+                const rings = 2;
+                const particlesPerRing = [50, 30];
+
+                for (let ring = 0; ring < rings; ring++) {
+                    const particleCount = particlesPerRing[ring];
+                    const ringDelay = ring * 60;
+                    const ringVelocityBase = 180 - (ring * 50);
+
+                    setTimeout(() => {
+                        for (let i = 0; i < particleCount; i++) {
+                            const particle = document.createElement('div');
+                            particle.className = 'firework';
+                            particle.style.left = x + '%';
+                            particle.style.top = y + '%';
+                            particle.style.color = color;
+
+                            const angle = (Math.PI * 2 * i) / particleCount;
+                            const randomAngleOffset = (Math.random() - 0.5) * 0.3;
+                            const actualAngle = angle + randomAngleOffset;
+
+                            const velocity = ringVelocityBase + Math.random() * 50;
+                            const xPos = Math.cos(actualAngle) * velocity;
+                            const yPos = Math.sin(actualAngle) * velocity;
+
+                            particle.style.setProperty('--x', xPos + 'px');
+                            particle.style.setProperty('--y', yPos + 'px');
+
+                            const duration = 1.5 + Math.random() * 0.5;
+                            particle.style.animation = `firework-explode ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+
+                            confettiContainer.appendChild(particle);
+                            setTimeout(() => particle.remove(), duration * 1000 + 500);
+                        }
+                    }, ringDelay);
+                }
+            }, 900);
+
+        }, f * 300);
     }
 }
 
